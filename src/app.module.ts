@@ -4,6 +4,7 @@ import { AppService } from './app.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule } from '@nestjs/config';
 import { QuotesModule } from './quotes/quotes.module';
+import { Quote } from './quotes/quote.entity';
 
 @Module({
   imports: [
@@ -16,7 +17,7 @@ import { QuotesModule } from './quotes/quotes.module';
       password: 'ramsay',
       database: 'postgres',
       logging: true,
-      entities: [QuotesModule],
+      entities: [Quote],
       synchronize: false,
       extra: {
         options: {
@@ -24,6 +25,8 @@ import { QuotesModule } from './quotes/quotes.module';
         },
       },
     }),
+    TypeOrmModule.forFeature([Quote]),
+    QuotesModule,
   ],
   controllers: [AppController],
   providers: [AppService],
