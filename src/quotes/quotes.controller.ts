@@ -3,31 +3,23 @@ import { ApiTags } from '@nestjs/swagger';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Quote } from './quote.entity';
+import { QuotesService } from './quotes.services';
 
 @Controller('quotes')
 @ApiTags('quotes')
 export class QuotesController {
-  constructor(
-    @InjectRepository(Quote)
-    private quotesRepository: Repository<Quote>,
-  ) {}
-
+  constructor(private readonly quotesService: QuotesService) {}
   @Get()
-  async findAll(
+  findAll(
     @Query('page') page = 1,
     @Query('limit') limit = 10,
     @Query('sort') sort: 'ASC' | 'DESC' = 'ASC',
-  ): Promise<{ quotes: Quote[]; total: number; page: number; limit: number }> {
-    const [quotes, total] = await this.quotesRepository.findAndCount({
-      order: { quote: sort },
-      skip: (page - 1) * limit,
-      take: limit,
-    });
-    return { quotes, total, page, limit };
+  ) {
+    return this.quotesService.findAll(page, limit, sort);
   }
 
   @Get(':id')
-  async findOne(@Param('id') id: number): Promise<Quote> {
-    return this.quotesRepository.findOne({ where: { id } });
+  findOne(@Param('id') id: number) {
+    return this.quotesService.findOne(id);
   }
 }
